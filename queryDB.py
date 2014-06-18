@@ -27,9 +27,18 @@ def totalNumberOfUsers(c):
   out.append( str(len(c.find().distinct("user.screen_name"))) )
   return '\n'.join(out)
 
+def tweetsPerLevel(c, variable):
+  out = c.aggregate(
+    { "$group": {
+        "_id": "$" + variable,
+        "tweetsPerLevel": { "$sum": 1 }
+    }}
+  )
+  return out
+
 def write(s, fname):
   fout = open(fname, 'w')
-  fout.write(s)
+  fout.write( str(s) )
   fout.close()
 
 def main():
@@ -43,8 +52,9 @@ def main():
   mongocollection = mongodb[cname]
 
   # start querying
-  write( totalNumberOfTweets(mongocollection), './tweets.tab' )
-  write( totalNumberOfUsers(mongocollection), './users.tab' )
+#  write( totalNumberOfTweets(mongocollection), './tweets.tab' )
+#  write( totalNumberOfUsers(mongocollection), './users.tab' )
+  write( tweetsPerLevel(mongocollection, 'user.screen_name'), 'users.freq.json' )
 
 if __name__ == '__main__':
   main()
