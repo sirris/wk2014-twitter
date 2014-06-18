@@ -3,7 +3,7 @@
 # the Twitter messages that were collected.
 ###############################################################################
 
-import pymongo, re, time, sys
+import pymongo, re, time, sys, codecs
 from bson.son import SON
 from collections import Counter
 from datetime import datetime
@@ -28,17 +28,22 @@ def totalNumberOfUsers(c):
   return '\n'.join(out)
 
 def tweetsPerLevel(c, variable):
-  out = c.aggregate(
+  """ return a column with amount of tweets per distinct user """
+  qout = c.aggregate(
     { "$group": {
         "_id": "$" + variable,
         "tweetsPerLevel": { "$sum": 1 }
     }}
   )
-  return out
+  out = ['freq\tuser']
+  # bit of slow hack to get this in a column format
+  for item in qout['result']:
+    out.append( str(item['tweetsPerLevel']) + '\t' + unicode(item['_id']) )
+  return '\n'.join(out)
 
 def write(s, fname):
-  fout = open(fname, 'w')
-  fout.write( str(s) )
+  fout = codecs.open(fname, 'w', 'utf-8')
+  fout.write( unicode(s) )
   fout.close()
 
 def main():
@@ -54,7 +59,7 @@ def main():
   # start querying
 #  write( totalNumberOfTweets(mongocollection), './tweets.tab' )
 #  write( totalNumberOfUsers(mongocollection), './users.tab' )
-  write( tweetsPerLevel(mongocollection, 'user.screen_name'), 'users.freq.json' )
+  write( tweetsPerLevel(mongocollection, 'user.screen_name'), 'users.freq.tab' )
 
 if __name__ == '__main__':
   main()
