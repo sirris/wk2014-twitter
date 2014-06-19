@@ -35,7 +35,7 @@ def tweetsPerLevel(c, variable):
         "tweetsPerLevel": { "$sum": 1 }
     }}
   )
-  out = ['freq\tuser']
+  out = ['freq\tvariable']
   # bit of slow hack to get this in a column format
   for item in qout['result']:
     out.append( str(item['tweetsPerLevel']) + '\t' + unicode(item['_id']) )
@@ -76,6 +76,18 @@ def findCenter(coordinates):
     lats.append(coordinate[1])
   return [sum(longs)/float(len(coordinates)), sum(lats)/float(len(coordinates))]
 
+def addTime(c):
+  for doc in c.find():
+    try:
+      ts = doc["created_at"]
+      c.update({"_id" : doc["_id"]}, {"$set" : {"created_at_parsed" : datetime.strptime(re.sub(r"[+-]([0-9])+", "", ts),"%a %b %d %H:%M:%S %Y")}})
+      hourminute = ':'.join(ts.split(' ')[3].split(':')[0:2])
+      c.update({"_id" : doc["_id"]}, {"$set" : {"created_at_hourminute" : hourminute}})
+      hour10minute = ts.split(' ')[3].split(':')[0] + ':' + ts.split(' ')[3].split(':')[1][0] + '0'
+      c.update({"_id" : doc["_id"]}, {"$set" : {"created_at_hour10minute" : hour10minute}})
+    except KeyError:
+      continue
+
 def write(s, fname):
   fout = codecs.open(fname, 'w', 'utf-8')
   fout.write( unicode(s) )
@@ -92,10 +104,13 @@ def main():
   mongocollection = mongodb[cname]
 
   # start querying
-#  write( totalNumberOfTweets(mongocollection), './tweets.tab' )
-#  write( totalNumberOfUsers(mongocollection), './users.tab' )
-#  write( tweetsPerLevel(mongocollection, 'user.screen_name'), './users.freq.tab' )
+  write( totalNumberOfTweets(mongocollection), './tweets.tab' )
+  write( totalNumberOfUsers(mongocollection), './users.tab' )
+  write( tweetsPerLevel(mongocollection, 'user.screen_name'), './users.freq.tab' )
+  write( tweetsPerLevel(mongocollection, 'lang'), './lang.tab' )
+#  addTime( mongocollection )
   write( geotweets(mongocollection), './locations.geojson' )
+  write( tweetsPerLevel(mongocollection, 'created_at_hourminute'), './tweets.minute.tab')
 
 if __name__ == '__main__':
   main()

@@ -1,0 +1,23 @@
+1;Thibaut;Courtois;thibautcourtois
+12;Simon;Mignolet;SMignolet
+13;Sammy;Bossut;SammyBossut1
+2;Toby;Alderweireld;alderweireldtob
+3;Thomas;Vermaelen;T_Vermaelen05
+4;Vincent;Kompany;VincentKompany;
+5;Jan;Vertonghen;Jan_Vertonghen
+15;Daniel;Van Buyten;DanielvanBuyten
+18;Nicolas;Lombaerts;None
+21;Anthony;Vanden Borre;AvdBorre
+23;Laurent;Ciman;None
+6;Axel;Witsel;AWitselOfficiel
+7;Kevin;De Bruyne;DeBruyneKev
+8;Marouane;Fellaini;fellainiM
+16;Steven;Defour;Steven_Defour35
+19;Mousa;Dembélé;mousadembele
+22;Nacer;Chadli;NChadli
+9;Romelu;Lukaku;RomeluLukaku9
+10;Eden;Hazard;hazardeden10
+11;Kevin;Mirallas;KevinMirallas96
+14;Dries;Mertens;dries_mertens14
+17;Divock;Origi;divockorigi
+20;Adnan;Januza;januzajAdn
