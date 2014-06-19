@@ -128,7 +128,8 @@ def main():
 #  write( tweetsPerLevel(mongocollection, 'lang'), './lang.tab' )
 #  addTime( mongocollection )
 #  write( geotweets(mongocollection), './locations.geojson' )
-  write( flatgeotweets(mongocollection), './locations.tab' )
+#  write( flatgeotweets(mongocollection), './locations.tab' )
+  write( tweetsPerLevel(mongocollection, 'entities.media.media_url'), './media.tab')
 #  write( tweetsPerLevel(mongocollection, 'created_at_hourminute'), './tweets.minute.tab')
 
 if __name__ == '__main__':
