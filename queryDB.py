@@ -41,6 +41,24 @@ def tweetsPerLevel(c, variable):
     out.append( str(item['tweetsPerLevel']) + '\t' + unicode(item['_id']) )
   return '\n'.join(out)
 
+def flatgeotweets(c):
+  """ get a list of points with freq where tweets were tweeted in BE"""
+  lst = []
+  for tweet in c.find({'place': {'$ne': 'null'}}):
+    try:
+      place = tweet['place']
+      if place['country_code'] == 'BE':
+        point = findCenter(place['bounding_box']['coordinates'][0])
+        pnt = ', '.join(str(x) for x in point)
+        lst.append(pnt)
+    except:
+      continue
+  cntr = Counter(lst)
+  out = []
+  for cnt in cntr:
+    out.append( cnt + ', ' + str(cntr[cnt]) )
+  return '\n'.join(out)
+
 def geotweets(c):
   """ get a geojson list of points where tweets were tweeted in BE"""
   lst = []
@@ -104,13 +122,14 @@ def main():
   mongocollection = mongodb[cname]
 
   # start querying
-  write( totalNumberOfTweets(mongocollection), './tweets.tab' )
-  write( totalNumberOfUsers(mongocollection), './users.tab' )
-  write( tweetsPerLevel(mongocollection, 'user.screen_name'), './users.freq.tab' )
-  write( tweetsPerLevel(mongocollection, 'lang'), './lang.tab' )
+#  write( totalNumberOfTweets(mongocollection), './tweets.tab' )
+#  write( totalNumberOfUsers(mongocollection), './users.tab' )
+#  write( tweetsPerLevel(mongocollection, 'user.screen_name'), './users.freq.tab' )
+#  write( tweetsPerLevel(mongocollection, 'lang'), './lang.tab' )
 #  addTime( mongocollection )
-  write( geotweets(mongocollection), './locations.geojson' )
-  write( tweetsPerLevel(mongocollection, 'created_at_hourminute'), './tweets.minute.tab')
+#  write( geotweets(mongocollection), './locations.geojson' )
+  write( flatgeotweets(mongocollection), './locations.tab' )
+#  write( tweetsPerLevel(mongocollection, 'created_at_hourminute'), './tweets.minute.tab')
 
 if __name__ == '__main__':
   main()
