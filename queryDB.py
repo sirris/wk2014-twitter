@@ -106,6 +106,29 @@ def addTime(c):
     except KeyError:
       continue
 
+def readPlayersDB(fname):
+  fin = codecs.open(fname, 'r', 'utf-8')
+  lines = fin.readlines()
+  fin.close()
+  db = {}
+  for line in lines:
+    l = line.strip().split(';')
+    key = l[0]
+    db[key] = {'firstname': l[1],
+               'lastname': l[2],
+               'twitter': l[3]}
+  return db
+
+def tweetsPerPlayer(c, pdb):
+  out = ['freq\tnumber\tname']
+  for p in pdb.keys():
+    ln = pdb[p]['lastname']
+    regex = re.compile(".*" + ln + ".*", re.IGNORECASE)
+    hits = c.find({"text": regex})
+    f = hits.count()
+    out.append(str(f) + '\t' + str(p) + '\t' + pdb[p]['firstname'] + ' ' + ln)
+  return '\n'.join(out)
+
 def write(s, fname):
   fout = codecs.open(fname, 'w', 'utf-8')
   fout.write( unicode(s) )
@@ -121,6 +144,9 @@ def main():
   mongodb = client[dbname]
   mongocollection = mongodb[cname]
 
+  # read in players db
+  playersdb = readPlayersDB('players_nl.txt')
+
   # start querying
 #  write( totalNumberOfTweets(mongocollection), './tweets.tab' )
 #  write( totalNumberOfUsers(mongocollection), './users.tab' )
@@ -129,8 +155,9 @@ def main():
 #  addTime( mongocollection )
 #  write( geotweets(mongocollection), './locations.geojson' )
 #  write( flatgeotweets(mongocollection), './locations.tab' )
-  write( tweetsPerLevel(mongocollection, 'entities.media.media_url'), './media.tab')
-#  write( tweetsPerLevel(mongocollection, 'created_at_hourminute'), './tweets.minute.tab')
+#  write( tweetsPerLevel(mongocollection, 'entities.media.media_url'), './media.tab' )
+#  write( tweetsPerLevel(mongocollection, 'created_at_hourminute'), './tweets.minute.tab' )
+  write( tweetsPerPlayer(mongocollection, playersdb), './freq.players.tab' )
 
 if __name__ == '__main__':
   main()
