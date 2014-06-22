@@ -74,11 +74,17 @@ dev.off()
 
 # read table
 tweets.minute = read.delim('tweets.minute.tab', sep='\t', header=T)
-starttime = strptime('21:00', '%H:%M')
+starttime = strptime('18:00', '%H:%M')
+stoptime = strptime('20:15', '%H:%M')
+
 # annotations
-annos = read.delim('annos_gergha.tab', sep=';', header=F)
+annos = read.delim('annos_belrus.tab', sep=';', header=F)
 # parse timestamp
 tweets.minute$timestamp = strptime(tweets.minute$variable, '%H:%M') + 3600*2
+# shorten
+tweets.minute = droplevels( subset(tweets.minute,
+                       timestamp > (starttime - (15*60)) &
+                       timestamp < stoptime) )
 # sort
 tweets.minute.ordered = tweets.minute[ order(tweets.minute$timestamp), ]
 d = tweets.minute.ordered[!is.na(tweets.minute.ordered$timestamp),]
