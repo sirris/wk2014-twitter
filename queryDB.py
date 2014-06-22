@@ -40,7 +40,7 @@ def getByDotNotation( obj, ref ):
         val = val[0][key]
       except KeyError:
         continue
-  if str(val).startswith('http'):
+  if isinstance(val, (str, unicode)):
     return val
   else:
     return None
@@ -174,14 +174,14 @@ def main():
 #  write( totalNumberOfUsers(mongocollection), './users.tab' )
 
   print 'tweets per screen name'
-#  write( tweetsPerLevel(mongocollection, 'user.screen_name'), './users.freq.tab' )
+  write( tweetsPerLevel(mongocollection, 'user.screen_name'), './users.freq.tab' )
 
   print 'tweets per language'
-#  write( tweetsPerLevel(mongocollection, 'lang'), './lang.tab' )
+  write( tweetsPerLevel(mongocollection, 'lang'), './lang.tab' )
 
   print 'tweets per location'
-#  write( geotweets(mongocollection), './locations.geojson' )
-#  write( flatgeotweets(mongocollection), './locations.tab' )
+  write( geotweets(mongocollection), './locations.geojson' )
+  write( flatgeotweets(mongocollection), './locations.tab' )
 
   print 'tweets per media'
   write( tweetsPerLevel(mongocollection, 'entities.media.media_url'), './media.tab' )
