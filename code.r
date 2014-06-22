@@ -48,10 +48,11 @@ fr = locations$freq/max(locations$freq)
 spdf <- getCountries(c("BEL"), level=1)
 
 # plot coordinates
+png('tweet.in.belgium.png', height=2000, width=2000, res=200)
 plot(spdf, border='darkgrey')
 points(locations$lng, locations$lat, pch=16, col=rgb(1, 1-fr, 1-fr), cex=fr+0.4)
 points(locations$lng, locations$lat, cex=fr+0.4, col='darkgrey')
-
+dev.off()
 
 ################################################################################
 # Time Series plot with annotations
@@ -59,9 +60,9 @@ points(locations$lng, locations$lat, cex=fr+0.4, col='darkgrey')
 
 # read table
 tweets.minute = read.delim('tweets.minute.tab', sep='\t', header=T)
-starttime = strptime('18:00', '%H:%M')
+starttime = strptime('21:00', '%H:%M')
 # annotations
-annos = read.delim('annos_nedaus.tab', sep=';', header=F)
+annos = read.delim('annos_gergha.tab', sep=';', header=F)
 # parse timestamp
 tweets.minute$timestamp = strptime(tweets.minute$variable, '%H:%M') + 3600*2
 # sort
@@ -81,9 +82,10 @@ hl = seq(from=1000, to=max(d$freq), by=1000)
 abline(h=hl, col='grey', lty=2)
 # create annotations
 for (i in 1:nrow(annos)){
-  t = starttime + annos[i,1] * 60
+  t = starttime + (annos[i,1] * 60) + (annos[i,2] * 60)
+  print( paste(t, annos[i,3], sep=':'))
   abline(v=t, lty=3, col='darkgrey')
-  text(t, max(d$freq) + 1000, annos[i,2], srt=90, pos=3, cex=0.7)
+  text(t, max(d$freq) + 1000, annos[i,3], srt=90, pos=3, cex=0.7)
 }
 # create area
 polygon( x=c( d$timestamp[1], d$timestamp, d$timestamp[nrow(d)], 
