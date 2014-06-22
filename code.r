@@ -5,7 +5,7 @@
 ds = read.delim('freq.players.tab', sep='\t')
 ds.o = ds[order(ds$freq, decreasing=TRUE),]
 
-png('freq.players.png', width=1500, height=1500, res=200)
+png('freq.players.png', width=2000, height=1000, res=200)
 par(mar=c(8,4,2,1))
 barplot(ds.o$freq, xlab='', ylab='', axes=F, col='white', border=F)
 hlines = seq(from=0, to=max(ds$freq), by=5000)
