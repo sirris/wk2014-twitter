@@ -145,6 +145,36 @@ def tweetsPerPlayer(c, pdb):
     out.append(str(f) + '\t' + str(p) + '\t' + pdb[p]['firstname'] + ' ' + ln)
   return '\n'.join(out)
 
+def tokfreqPer10Minutes(c, lng, th):
+  """ map reduce sometime """
+  db = {}
+  fin = open('stoplist_' + lng + '.txt', 'r')
+  stoplist = fin.read().lower().split('\n')
+  fin.close()
+  for tweet in c.find():
+    try:
+      if tweet['lang'] == lng:
+        ts = tweet['created_at_hour10minute']
+        for w in tweet['text'].lower().split():
+          w = re.sub('[!@#$%&\(\)\*:;\.,\?]', '', w)
+          if w not in stoplist:
+            try:
+              db[ts][w] += 1
+            except KeyError:
+              try:
+                db[ts][w] = 1
+              except KeyError:
+                db[ts] = {w: 1}
+    except KeyError:
+      continue
+  out = ['ts\tword\tfreq']
+  for ts in db.keys():
+    for word in db[ts].keys():
+      if db[ts][word] > th:
+        line = '\t'.join([ts, word, str(db[ts][word])])
+        out.append(line)
+  return '\n'.join(out)
+
 def write(s, fname):
   fout = codecs.open(fname, 'w', 'utf-8')
   fout.write( unicode(s) )
@@ -164,14 +194,14 @@ def main():
   playersdb = readPlayersDB(sys.argv[3])
 
   # set time
-#  addTime( mongocollection)
+  addTime( mongocollection)
 
   # start querying
   print 'total tweets'
-#  write( totalNumberOfTweets(mongocollection), './tweets.tab' )
+  write( totalNumberOfTweets(mongocollection), './tweets.tab' )
 
   print 'total users'
-#  write( totalNumberOfUsers(mongocollection), './users.tab' )
+  write( totalNumberOfUsers(mongocollection), './users.tab' )
 
   print 'tweets per screen name'
   write( tweetsPerLevel(mongocollection, 'user.screen_name'), './users.freq.tab' )
@@ -191,6 +221,9 @@ def main():
 
   print 'tweets per player'
   write( tweetsPerPlayer(mongocollection, playersdb), './freq.players.tab' )
+
+  print 'token frequency per ten minutes'
+  write( tokfreqPer10Minutes(mongocollection, 'en', 100), './10min.tokfreq.tab' )
 
 if __name__ == '__main__':
   main()
