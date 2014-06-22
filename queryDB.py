@@ -7,6 +7,7 @@ import pymongo, re, time, sys, codecs
 from bson.son import SON
 from collections import Counter
 from datetime import datetime
+from bson.code import Code
 
 dbname = sys.argv[1]
 cname = sys.argv[2]
@@ -27,18 +28,32 @@ def totalNumberOfUsers(c):
   out.append( str(len(c.find().distinct("user.screen_name"))) )
   return '\n'.join(out)
 
+def getByDotNotation( obj, ref ):
+  val = obj
+  for key in ref.split( '.' ):
+    try:
+      val = val[key]
+    except KeyError:
+      continue
+    except TypeError:
+      try:
+        val = val[0][key]
+      except KeyError:
+        continue
+  if str(val).startswith('http'):
+    return val
+  else:
+    return None
+
 def tweetsPerLevel(c, variable):
-  """ return a column with amount of tweets per distinct user """
-  qout = c.aggregate(
-    { "$group": {
-        "_id": "$" + variable,
-        "tweetsPerLevel": { "$sum": 1 }
-    }}
-  )
+  """ return a column with amount of tweets per distinct user, and yeah yeah map reduce """
+  qout = [getByDotNotation(item, variable) for item in c.find()]
+  qoutc = Counter(qout)
   out = ['freq\tvariable']
   # bit of slow hack to get this in a column format
-  for item in qout['result']:
-    out.append( str(item['tweetsPerLevel']) + '\t' + unicode(item['_id']) )
+  for item in qoutc:
+    if item:
+      out.append( str(qoutc[item]) + '\t' + item )
   return '\n'.join(out)
 
 def flatgeotweets(c):
@@ -120,6 +135,7 @@ def readPlayersDB(fname):
   return db
 
 def tweetsPerPlayer(c, pdb):
+  """ yeah yeah map reduce... """
   out = ['freq\tnumber\tname']
   for p in pdb.keys():
     ln = pdb[p]['lastname']
@@ -145,18 +161,35 @@ def main():
   mongocollection = mongodb[cname]
 
   # read in players db
-  playersdb = readPlayersDB('players_nl.txt')
+  playersdb = readPlayersDB(sys.argv[3])
+
+  # set time
+#  addTime( mongocollection)
 
   # start querying
+  print 'total tweets'
 #  write( totalNumberOfTweets(mongocollection), './tweets.tab' )
+
+  print 'total users'
 #  write( totalNumberOfUsers(mongocollection), './users.tab' )
+
+  print 'tweets per screen name'
 #  write( tweetsPerLevel(mongocollection, 'user.screen_name'), './users.freq.tab' )
+
+  print 'tweets per language'
 #  write( tweetsPerLevel(mongocollection, 'lang'), './lang.tab' )
-#  addTime( mongocollection )
+
+  print 'tweets per location'
 #  write( geotweets(mongocollection), './locations.geojson' )
 #  write( flatgeotweets(mongocollection), './locations.tab' )
-#  write( tweetsPerLevel(mongocollection, 'entities.media.media_url'), './media.tab' )
-#  write( tweetsPerLevel(mongocollection, 'created_at_hourminute'), './tweets.minute.tab' )
+
+  print 'tweets per media'
+  write( tweetsPerLevel(mongocollection, 'entities.media.media_url'), './media.tab' )
+ 
+  print 'tweets per minute'
+  write( tweetsPerLevel(mongocollection, 'created_at_hourminute'), './tweets.minute.tab' )
+
+  print 'tweets per player'
   write( tweetsPerPlayer(mongocollection, playersdb), './freq.players.tab' )
 
 if __name__ == '__main__':
