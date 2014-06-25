@@ -1,11 +1,48 @@
 ################################################################################
+# Generate tables
+################################################################################
+
+library(xtable)
+
+ds = read.table('tweets.tab', header=T)
+print(xtable(ds), include.rownames=FALSE, file='totaltweets.tex')
+
+ds = read.table('users.tab', header=T)
+print(xtable(ds), include.rownames=FALSE, file='totaltweeters.tex')
+
+ds = read.table('users.freq.tab', header=T)
+ds.order = ds[order(ds$freq, decreasing=TRUE),]
+print(xtable(ds.order[1:10,]), include.rownames=FALSE, file='top10tweeters.tex')
+
+ds = read.table('lang.tab', header=T)
+ds.order = ds[order(ds$freq, decreasing=TRUE),]
+print(xtable(ds.order[1:10,]), include.rownames=FALSE, file='top10langs.tex')
+
+ds = read.table('media.tab', header=T)
+ds.order = ds[order(ds$freq, decreasing=TRUE),]
+print(xtable(ds.order[1:10,]), include.rownames=FALSE, file='media.tex')
+
+print(xtable(matrix(nrow(ds), dimnames=list(c(''),c('photos')))), include.rownames=FALSE, file='totalmedia.tex')
+
+
+################################################################################
+# Pie chart of lang distro
+################################################################################
+ds = read.table('lang.tab', header=T)
+lngs = c('nl', 'fr')
+be = ds[ds$variable %in% lngs, ]
+png('langpie.png', width=1000, height=1000, res=300)
+pie(be$freq, labels=paste(lngs, be$freq, sep=': '))
+dev.off()
+
+################################################################################
 # Bar chart with player mentions
 ################################################################################
 
 ds = read.delim('freq.players.tab', sep='\t')
 ds.o = ds[order(ds$freq, decreasing=TRUE),]
 
-png('freq.players.png', width=2000, height=1000, res=200)
+png('freq-players.png', width=2000, height=1000, res=200)
 par(mar=c(8,4,2,1))
 barplot(ds.o$freq, xlab='', ylab='', axes=F, col='white', border=F)
 hlines = seq(from=0, to=max(ds$freq), by=5000)
@@ -62,7 +99,7 @@ fr = locations$freq/max(locations$freq)
 spdf <- getCountries(c("BEL"), level=1)
 
 # plot coordinates
-png('tweet.in.belgium.png', height=1500, width=1500, res=200)
+png('tweet-in-belgium.png', height=1500, width=1500, res=200)
 plot(spdf, border='darkgrey')
 points(locations$lng, locations$lat, pch=16, col=rgb(1, 0.1, 0.1,0.8), cex=fr+0.5)
 points(locations$lng, locations$lat, cex=fr+0.5, col='darkgrey')
@@ -89,7 +126,7 @@ tweets.minute = droplevels( subset(tweets.minute,
 tweets.minute.ordered = tweets.minute[ order(tweets.minute$timestamp), ]
 d = tweets.minute.ordered[!is.na(tweets.minute.ordered$timestamp),]
 # plot
-png('tweets.minute.png', height=1000, width=3000, res=180)
+png('tweets-minute.png', height=1000, width=3000, res=180)
 plot(d$timestamp, d$freq, type='l', ylim=c(0, max(d$freq) + 5000),
      xlab='', ylab='Amount of tweets', axes=F, cex.lab=0.6
     )
