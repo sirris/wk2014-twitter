@@ -64,7 +64,7 @@ def flatgeotweets(c):
       place = tweet['place']
       if place['country_code'] == 'BE':
         point = findCenter(place['bounding_box']['coordinates'][0])
-        pnt = ', '.join(str(x) for x in point)
+        pnt = ', '.join(str( round(x, 4) ) for x in point)
         lst.append(pnt)
     except:
       continue
@@ -151,6 +151,9 @@ def tokfreqPer10Minutes(c, lng, th):
   fin = open('stoplist_' + lng + '.txt', 'r')
   stoplist = fin.read().lower().split('\n')
   fin.close()
+  fin = open('stoplist_en.txt', 'r')
+  stoplist.extend( fin.read().lower().split('\n') )
+  fin.close()
   for tweet in c.find():
     try:
       if tweet['lang'] == lng:
@@ -194,36 +197,36 @@ def main():
   playersdb = readPlayersDB(sys.argv[3])
 
   # set time
-  addTime( mongocollection)
+#  addTime( mongocollection)
 
   # start querying
   print 'total tweets'
-  write( totalNumberOfTweets(mongocollection), './tweets.tab' )
+#  write( totalNumberOfTweets(mongocollection), './tweets.tab' )
 
   print 'total users'
-  write( totalNumberOfUsers(mongocollection), './users.tab' )
+#  write( totalNumberOfUsers(mongocollection), './users.tab' )
 
   print 'tweets per screen name'
-  write( tweetsPerLevel(mongocollection, 'user.screen_name'), './users.freq.tab' )
+#  write( tweetsPerLevel(mongocollection, 'user.screen_name'), './users.freq.tab' )
 
   print 'tweets per language'
-  write( tweetsPerLevel(mongocollection, 'lang'), './lang.tab' )
+#  write( tweetsPerLevel(mongocollection, 'lang'), './lang.tab' )
 
   print 'tweets per location'
-  write( geotweets(mongocollection), './locations.geojson' )
-  write( flatgeotweets(mongocollection), './locations.tab' )
+#  write( geotweets(mongocollection), './locations.geojson' )
+#  write( flatgeotweets(mongocollection), './locations.tab' )
 
   print 'tweets per media'
-  write( tweetsPerLevel(mongocollection, 'entities.media.media_url'), './media.tab' )
+#  write( tweetsPerLevel(mongocollection, 'entities.media.media_url'), './media.tab' )
  
   print 'tweets per minute'
-  write( tweetsPerLevel(mongocollection, 'created_at_hourminute'), './tweets.minute.tab' )
+#  write( tweetsPerLevel(mongocollection, 'created_at_hourminute'), './tweets.minute.tab' )
 
   print 'tweets per player'
-  write( tweetsPerPlayer(mongocollection, playersdb), './freq.players.tab' )
+#  write( tweetsPerPlayer(mongocollection, playersdb), './freq.players.tab' )
 
   print 'token frequency per ten minutes'
-  write( tokfreqPer10Minutes(mongocollection, 'en', 100), './10min.tokfreq.tab' )
+  write( tokfreqPer10Minutes(mongocollection, 'nl', 100), './10min.tokfreq.tab' )
 
 if __name__ == '__main__':
   main()
