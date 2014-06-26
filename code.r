@@ -157,7 +157,7 @@ dev.off()
 # tf-idf
 ################################################################################
 
-ds = read.delim('10min.tokfreq.tab', header=T, sep='\t')
+ds = read.delim('10min.tokfreq.tab', header=T, sep='\t', quote='"')
 
 # inversedocfreq
 ds.tab = table(ds$ts, ds$word)
@@ -180,7 +180,7 @@ for (lvl in levels(ds$ts)) {
   ds.lvl = ds[ds$ts == lvl,]
   for (w in ds.lvl$word){
     idf = idfdb[idfdb$idfnames == w,]$idf
-    tf = ds.lvl[ds.lvl$word == w,]$freq
+    tf = ds.lvl[ds.lvl$word == w,]$freq / sum(ds.lvl$freq)
     tfidf = tf * idf
     rw = c(lvl, w, tfidf)
     if (length(rw) == 3){
@@ -192,8 +192,14 @@ for (lvl in levels(ds$ts)) {
 tfidfs.mat = as.data.frame(matrix(tfidfs, ncol=3, byrow=T))
 colnames(tfidfs.mat) = c('ts', 'w', 'tfidf')
 
+out = c()
+rnames = c()
 for (lvl in levels(as.factor(tfidfs.mat$ts))){
   mat.lvl = tfidfs.mat[tfidfs.mat$ts == lvl,]
-  print(lvl)
-  print(paste(as.vector(mat.lvl[order(mat.lvl$tfidf, decreasing=T),]$w[1:5]), sep=': '))
+  out = rbind(out, as.vector(mat.lvl[order(mat.lvl$tfidf, decreasing=T),]$w[1:5]))
+  rnames = c(rnames, lvl)
 }
+
+rownames(out) = rnames
+print(xtable(t(out)[,c(10:21)]), file='tfidf.tex')
+
