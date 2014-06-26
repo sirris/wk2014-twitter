@@ -160,7 +160,7 @@ def tokfreqPer10Minutes(c, lng, th):
       if tweet['lang'] == lng:
         ts = tweet['created_at_hour10minute']
         for w in tweet['text'].lower().split():
-          w = re.sub('[!@#$%&\(\)\*:;\.,\?]', '', w)
+          w = re.sub('[\W]', '', w)
           if w not in stoplist:
             try:
               db[ts][w] += 1
