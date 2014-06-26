@@ -126,7 +126,7 @@ tweets.minute = droplevels( subset(tweets.minute,
 tweets.minute.ordered = tweets.minute[ order(tweets.minute$timestamp), ]
 d = tweets.minute.ordered[!is.na(tweets.minute.ordered$timestamp),]
 # plot
-png('tweets-minute.png', height=1000, width=3000, res=180)
+png('tweets-minute.png', height=1800, width=3000, res=180)
 plot(d$timestamp, d$freq, type='l', ylim=c(0, max(d$freq) + 5000),
      xlab='', ylab='Amount of tweets', axes=F, cex.lab=0.6
     )
@@ -151,3 +151,49 @@ polygon( x=c( d$timestamp[1], d$timestamp, d$timestamp[nrow(d)],
          col=rgb(1, 0.1, 0.1,0.8), border=NA
        )
 dev.off()
+
+
+################################################################################
+# tf-idf
+################################################################################
+
+ds = read.delim('10min.tokfreq.tab', header=T, sep='\t')
+
+# inversedocfreq
+ds.tab = table(ds$ts, ds$word)
+ndoc = nrow(ds.tab)
+idf = c()
+idfnames = c()
+i = 1
+while (i < ncol(ds.tab)){
+  ndocc = length(rownames(ds.tab)[ds.tab[,i] > 0])
+  w = colnames(ds.tab)[i]
+  idf = c(idf, log(ndoc / ndocc))
+  idfnames = c(idfnames, w)
+  i = i + 1
+}
+
+idfdb = data.frame(idfnames, idf)
+
+tfidfs = c()
+for (lvl in levels(ds$ts)) {
+  ds.lvl = ds[ds$ts == lvl,]
+  for (w in ds.lvl$word){
+    idf = idfdb[idfdb$idfnames == w,]$idf
+    tf = ds.lvl[ds.lvl$word == w,]$freq
+    tfidf = tf * idf
+    rw = c(lvl, w, tfidf)
+    if (length(rw) == 3){
+      tfidfs = c(tfidfs, rw)
+    }
+  }
+}
+
+tfidfs.mat = as.data.frame(matrix(tfidfs, ncol=3, byrow=T))
+colnames(tfidfs.mat) = c('ts', 'w', 'tfidf')
+
+for (lvl in levels(as.factor(tfidfs.mat$ts))){
+  mat.lvl = tfidfs.mat[tfidfs.mat$ts == lvl,]
+  print(lvl)
+  print(paste(as.vector(mat.lvl[order(mat.lvl$tfidf, decreasing=T),]$w[1:5]), sep=': '))
+}
