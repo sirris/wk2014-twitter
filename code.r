@@ -196,10 +196,10 @@ out = c()
 rnames = c()
 for (lvl in levels(as.factor(tfidfs.mat$ts))){
   mat.lvl = tfidfs.mat[tfidfs.mat$ts == lvl,]
-  out = rbind(out, as.vector(mat.lvl[order(mat.lvl$tfidf, decreasing=T),]$w[1:5]))
+  out = rbind(out, as.vector(mat.lvl[order(mat.lvl$tfidf, decreasing=T),]$w[1:3]))
   rnames = c(rnames, lvl)
 }
 
 rownames(out) = rnames
-print(xtable(t(out)[,c(10:21)]), file='tfidf.tex')
+print(xtable(out[c(10:21),]), file='tfidf.tex')
 
