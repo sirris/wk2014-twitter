@@ -227,7 +227,7 @@ def main():
 #  write( tweetsPerPlayer(mongocollection, playersdb), './freq.players.tab' )
 
   print 'token frequency per ten minutes'
-  write( tokfreqPer10Minutes(mongocollection, 'nl', 100), './10min.tokfreq.tab' )
+  write( tokfreqPer10Minutes(mongocollection, 'nl', 10), './10min.tokfreq.tab' )
 
 if __name__ == '__main__':
   main()
