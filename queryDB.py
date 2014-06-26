@@ -151,8 +151,9 @@ def tokfreqPer10Minutes(c, lng, th):
   fin = open('stoplist_' + lng + '.txt', 'r')
   stoplist = fin.read().lower().split('\n')
   fin.close()
-  fin = open('stoplist_en.txt', 'r')
+  fin = open('wordsEn.txt', 'r')
   stoplist.extend( fin.read().lower().split('\n') )
+  stoplist = set(stoplist)
   fin.close()
   for tweet in c.find():
     try:
