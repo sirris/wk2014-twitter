@@ -160,8 +160,8 @@ def tokfreqPer10Minutes(c, lng, th):
       if tweet['lang'] == lng:
         ts = tweet['created_at_hour10minute']
         for w in tweet['text'].lower().split():
-          w = re.sub('[\W]', '', w)
-          if w not in stoplist:
+          w = re.sub('[\W-]', '', w)
+          if w not in stoplist and not w.startswith('http'):
             try:
               db[ts][w] += 1
             except KeyError:
@@ -227,7 +227,7 @@ def main():
 #  write( tweetsPerPlayer(mongocollection, playersdb), './freq.players.tab' )
 
   print 'token frequency per ten minutes'
-  write( tokfreqPer10Minutes(mongocollection, 'nl', 10), './10min.tokfreq.tab' )
+  write( tokfreqPer10Minutes(mongocollection, 'nl', 50), './10min.tokfreq.tab' )
 
 if __name__ == '__main__':
   main()
