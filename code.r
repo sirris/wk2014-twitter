@@ -111,8 +111,8 @@ dev.off()
 
 # read table
 tweets.minute = read.delim('tweets.minute.tab', sep='\t', header=T)
-starttime = strptime('18:00', '%H:%M')
-stoptime = strptime('20:15', '%H:%M')
+starttime = strptime('22:00', '%H:%M')
+stoptime = strptime('23:50', '%H:%M')
 
 # annotations
 annos = read.delim('annos_belrus.tab', sep=';', header=F)

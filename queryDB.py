@@ -198,33 +198,33 @@ def main():
   playersdb = readPlayersDB(sys.argv[3])
 
   # set time
-#  addTime( mongocollection)
+  addTime( mongocollection)
 
   # start querying
   print 'total tweets'
-#  write( totalNumberOfTweets(mongocollection), './tweets.tab' )
+  write( totalNumberOfTweets(mongocollection), './tweets.tab' )
 
   print 'total users'
-#  write( totalNumberOfUsers(mongocollection), './users.tab' )
+  write( totalNumberOfUsers(mongocollection), './users.tab' )
 
   print 'tweets per screen name'
-#  write( tweetsPerLevel(mongocollection, 'user.screen_name'), './users.freq.tab' )
+  write( tweetsPerLevel(mongocollection, 'user.screen_name'), './users.freq.tab' )
 
   print 'tweets per language'
-#  write( tweetsPerLevel(mongocollection, 'lang'), './lang.tab' )
+  write( tweetsPerLevel(mongocollection, 'lang'), './lang.tab' )
 
   print 'tweets per location'
-#  write( geotweets(mongocollection), './locations.geojson' )
-#  write( flatgeotweets(mongocollection), './locations.tab' )
+  write( geotweets(mongocollection), './locations.geojson' )
+  write( flatgeotweets(mongocollection), './locations.tab' )
 
   print 'tweets per media'
-#  write( tweetsPerLevel(mongocollection, 'entities.media.media_url'), './media.tab' )
+  write( tweetsPerLevel(mongocollection, 'entities.media.media_url'), './media.tab' )
  
   print 'tweets per minute'
-#  write( tweetsPerLevel(mongocollection, 'created_at_hourminute'), './tweets.minute.tab' )
+  write( tweetsPerLevel(mongocollection, 'created_at_hourminute'), './tweets.minute.tab' )
 
   print 'tweets per player'
-#  write( tweetsPerPlayer(mongocollection, playersdb), './freq.players.tab' )
+  write( tweetsPerPlayer(mongocollection, playersdb), './freq.players.tab' )
 
   print 'token frequency per ten minutes'
   write( tokfreqPer10Minutes(mongocollection, 'nl', 50), './10min.tokfreq.tab' )
