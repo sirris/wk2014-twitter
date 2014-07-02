@@ -25,7 +25,14 @@ def totalNumberOfTweets(c):
 def totalNumberOfUsers(c):
   """ return column with total number of distinct users """
   out = ['users']
-  out.append( str(len(c.find().distinct("user.screen_name"))) )
+  s = set()
+#  out.append( str(len(c.find().distinct("user.screen_name"))) )
+  for tweet in c.find():
+    try:
+      s.add(tweet['user']['screen_name'])
+    except KeyError:
+      continue
+  out.append(str(len(s)))
   return '\n'.join(out)
 
 def getByDotNotation( obj, ref ):
@@ -198,7 +205,7 @@ def main():
   playersdb = readPlayersDB(sys.argv[3])
 
   # set time
-  addTime( mongocollection)
+#  addTime( mongocollection)
 
   # start querying
   print 'total tweets'
